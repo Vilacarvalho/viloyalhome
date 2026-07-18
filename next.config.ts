@@ -1,13 +1,16 @@
 import type { NextConfig } from "next";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
-
-// This app lives inside a folder of a larger repo. Pin the Turbopack root here
-// so Next doesn't climb up to the parent lockfile and try to compile it.
-const root = dirname(fileURLToPath(import.meta.url));
 
 const nextConfig: NextConfig = {
-  turbopack: { root },
+  // Allow testing on a phone through an HTTPS tunnel (cloudflared, localtunnel,
+  // ngrok). Next 16 blocks cross-origin dev requests unless the host is
+  // allowlisted. Wildcards match the tunnel's changing subdomain, so there's no
+  // need to edit this each time the tunnel URL changes.
+  allowedDevOrigins: [
+    "*.trycloudflare.com",
+    "*.loca.lt",
+    "*.ngrok-free.app",
+    "*.ngrok.io",
+  ],
 };
 
 export default nextConfig;
