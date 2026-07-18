@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #0e0f11;
+  --color-surface: #17191c;
+  --color-surface-2: #1f2226;
+  --color-ink: #f4f4f2;
+  --color-ink-muted: #9aa0a6;
+  --color-line: #2b2f34;
+  --color-accent: #3ba676;
+  --color-accent-hover: #2f8c63;
+  --color-danger: #d8695a;
+  --color-warning: #d1a24e;
+}
+
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-2: var(--color-surface-2);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-line: var(--color-line);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-danger: var(--color-danger);
+  --color-warning: var(--color-warning);
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  border-color: var(--color-line);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Leaflet controls need a little contrast tweak for the dark theme */
+.leaflet-container {
+  background: var(--color-surface-2);
+  font: inherit;
+}
+
+.leaflet-bar a,
+.leaflet-bar a:hover {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-color: var(--color-line);
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
