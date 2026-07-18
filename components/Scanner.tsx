@@ -136,7 +136,6 @@ export default function Scanner() {
         id="scanner-file"
         type="file"
         accept="image/*"
-        capture="environment"
         className="sr-only"
         onChange={(e) => {
           const file = e.target.files?.[0];

@@ -12,7 +12,7 @@ export default function Home() {
             Viloyalhome
           </h1>
           <p className="text-[11px] text-ink-muted">
-            Foto → localização → ficha do imóvel
+            Foto → localização → ficha do imóvel · v3
           </p>
         </div>
       </header>
