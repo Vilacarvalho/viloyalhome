@@ -129,12 +129,15 @@ export default function Scanner() {
 
   return (
     <div className="space-y-6">
+      {/* Visually hidden (not display:none) so the <label> reliably opens the
+          camera on iOS Safari, which blocks JS-triggered clicks on file inputs. */}
       <input
         ref={inputRef}
+        id="scanner-file"
         type="file"
         accept="image/*"
         capture="environment"
-        className="hidden"
+        className="sr-only"
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (file) handleFile(file);
@@ -151,14 +154,15 @@ export default function Scanner() {
             Tire uma foto na frente do imóvel. Usamos o GPS do seu aparelho para
             achar o endereço e montar a ficha.
           </p>
-          <button
-            type="button"
-            disabled={!!busy}
-            onClick={() => inputRef.current?.click()}
-            className="mt-5 w-full rounded-xl bg-accent px-4 py-3 font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-60"
+          <label
+            htmlFor="scanner-file"
+            aria-disabled={!!busy}
+            className={`mt-5 block w-full cursor-pointer rounded-xl bg-accent px-4 py-3 text-center font-medium text-white transition-colors hover:bg-accent-hover ${
+              busy ? "pointer-events-none opacity-60" : ""
+            }`}
           >
             {busy ?? "Tirar foto"}
-          </button>
+          </label>
           <p className="mt-3 text-[11px] text-ink-muted">
             A localização precisa de HTTPS e da sua permissão de GPS.
           </p>
@@ -169,13 +173,12 @@ export default function Scanner() {
         <div className="rounded-xl border border-danger/40 bg-danger/10 p-4 text-sm text-ink">
           <p className="font-medium text-danger">Não deu pra concluir</p>
           <p className="mt-1 text-ink-muted">{error}</p>
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            className="mt-3 text-sm font-medium text-accent hover:underline"
+          <label
+            htmlFor="scanner-file"
+            className="mt-3 inline-block cursor-pointer text-sm font-medium text-accent hover:underline"
           >
             Tentar de novo →
-          </button>
+          </label>
         </div>
       )}
 
