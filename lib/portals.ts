@@ -47,9 +47,10 @@ export function onrPesquisaLink(): string {
 }
 
 /**
- * Cascavel/PR geoprocessamento (cadastro, IPTU, valor venal). Public portal —
- * integration by coordinate is a next-phase item, this just opens it.
+ * Cascavel/PR geoprocessamento hub (cadastro, IPTU, valor venal, GeoCascavel).
+ * Official prefeitura page — automatic lookup by coordinate is a next-phase
+ * item; this just opens the portal for a manual query.
  */
 export function cascavelGeoLink(): string {
-  return "https://cascavel.atende.net/cidadao/servico/consulta-de-valor-venal-do-imovel";
+  return "https://cascavel.atende.net/cidadao/pagina/geoprocessamento";
 }
