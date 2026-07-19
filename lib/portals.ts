@@ -47,10 +47,13 @@ export function onrPesquisaLink(): string {
 }
 
 /**
- * Cascavel/PR geoprocessamento hub (cadastro, IPTU, valor venal, GeoCascavel).
- * Official prefeitura page — automatic lookup by coordinate is a next-phase
- * item; this just opens the portal for a manual query.
+ * GeoCascavel — Cascavel/PR's public cadastral map viewer (lote, quadra,
+ * inscrição, área, testada, matrícula, cartório). Confirmed working by manual
+ * DevTools inspection. Valor venal is NOT exposed here (or anywhere public):
+ * it's protected by sigilo fiscal (CTN art. 198), and the viewer itself is
+ * reCAPTCHA-gated, so this stays a manual deep-link rather than an automated
+ * lookup — both intentional protections we won't try to route around.
  */
 export function cascavelGeoLink(): string {
-  return "https://cascavel.atende.net/cidadao/pagina/geoprocessamento";
+  return "https://geocascavel.cascavel.pr.gov.br/geo-view/index.ctm";
 }

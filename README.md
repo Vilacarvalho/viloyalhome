@@ -1,16 +1,14 @@
 # Viloyalhome
 
 App/PWA para **escanear imóveis a partir de uma foto**: captura a localização,
-identifica o endereço no mapa e reúne os próximos passos (valor venal,
-matrícula, anúncios).
-
-Projeto independente — não tem relação com o painel do Studio Fernando Tinoco;
-vive nesta pasta apenas por conveniência de repositório e pode ser movido para
-um repositório próprio a qualquer momento.
+identifica o endereço no mapa e reúne o cadastro público, a matrícula e os
+próximos passos.
 
 - **Stack:** Next.js 16 (App Router), TypeScript, Tailwind CSS v4
 - **Mapa:** Leaflet + tiles do OpenStreetMap
-- **Geocodificação reversa:** Nominatim (via rota `/api/geocode`, server-side)
+- **Geocodificação reversa:** provedor plugável — Google/Mapbox (rua+número
+  confiáveis) com fallback automático para Nominatim/OSM (grátis, cobertura
+  variável) — via rota `/api/geocode`, server-side. Veja `lib/geocode/`.
 - **EXIF:** `exifr` (lê GPS embutido na foto, quando existe)
 
 ## Como funciona (v1)
@@ -19,25 +17,27 @@ um repositório próprio a qualquer momento.
 2. O app pega a **localização do aparelho** (GPS). Se falhar, tenta o **GPS
    embutido na foto (EXIF)**.
 3. A coordenada é convertida em **endereço** (geocodificação reversa).
-4. Monta-se a **ficha do imóvel**: foto, endereço, coordenadas, mapa e cards de
-   próximos passos.
+4. Monta-se a **ficha do imóvel**: foto, endereço, coordenadas, mapa (com
+   pino arrastável e edição manual do endereço) e cards de próximos passos.
 
 ### O que é dado real x deep-link
 
 | Recurso | Status no v1 |
 | --- | --- |
 | Foto + GPS + endereço + mapa | ✅ Real, funcionando |
+| Ajuste do endereço (pino arrastável / edição manual) | ✅ Real — cobre os casos em que o geocoder erra (condomínios, ruas sem numeração completa) |
 | Google Maps / Street View | ✅ Deep-link por coordenada |
-| Valor venal / cadastro (IPTU) | ⚙️ Consulta automática por coordenada (geoportal) — pronta, precisa do endpoint do município configurado |
+| Cadastro público (área, testada, inscrição, matrícula, cartório) | ⚙️ Consulta automática por coordenada (geoportal) — adaptador pronto, precisa do endpoint do município configurado |
+| Valor venal (IPTU) | ❌ Não é público em nenhum município — protegido por sigilo fiscal (CTN art. 198), só o proprietário acessa com login. Ver nota abaixo. |
 | Matrícula (Registro de Imóveis) | 🔗 Deep-link p/ ONR (pedido de certidão, oficial e pago) |
 | Anúncios (à venda) | 🔗 Busca por endereço nos portais (sem raspagem) |
 
-## Geoportal (cadastro + valor venal automáticos)
+## Geoportal (cadastro público por coordenada)
 
 O app consulta a **parcela cadastral** sob a coordenada e devolve inscrição,
-valor venal (IPTU), áreas, endereço cadastral e proprietário (quando público).
-O adaptador é **provider-agnóstico** e suporta os dois padrões mais comuns em
-prefeituras brasileiras:
+áreas, endereço cadastral e (quando exposto) proprietário. O adaptador é
+**provider-agnóstico** e suporta os dois padrões mais comuns em prefeituras
+brasileiras:
 
 - **ArcGIS REST** (`GEOPORTAL_KIND=arcgis`): aponta para a camada
   (`…/MapServer/0` ou `…/FeatureServer/0`); o app usa a operação `query` por
@@ -49,12 +49,16 @@ Os nomes das colunas variam por município — o mapeamento em
 `lib/geoportal/config.ts` já tenta vários candidatos e pode ser sobrescrito via
 `GEOPORTAL_FIELDS` (JSON). Veja `.env.local.example`.
 
-> **Cascavel/PR (cidade piloto):** a URL da camada cadastral precisa ser
-> confirmada numa rede que alcance `*.cascavel.pr.gov.br`. O ambiente de
-> desenvolvimento remoto bloqueia esse host por política de egresso, então o
-> endpoint fica configurável por env em vez de fixado no código. Enquanto não
-> configurado, o card mostra o link do portal oficial de Cascavel como
-> alternativa manual.
+> **Valor venal não é (e não deveria ser) automatizável.** Inspecionamos o
+> GeoCascavel (`geocascavel.cascavel.pr.gov.br`) manualmente via DevTools: o
+> visualizador mostra dados cadastrais reais e públicos por lote — endereço,
+> área do terreno, testada, inscrição, matrícula e até o cartório responsável
+> — mas a coluna "Valor" fica sempre vazia em todas as abas. Isso bate com o
+> sigilo fiscal do CTN (art. 198): valor venal é dado tributário, só o
+> proprietário acessa via login. O portal também é protegido por reCAPTCHA,
+> um sinal explícito de que consultas automatizadas não são bem-vindas — por
+> isso não construímos um scraper para contornar isso; o link
+> `cascavelGeoLink()` continua sendo um deep-link manual.
 
 ### Arquitetura
 
@@ -71,7 +75,7 @@ components/CadastreCard.tsx   # card do dossiê que consome a rota
 
 > **Por quê deep-links?** Matrícula não tem API pública gratuita (é via ONR,
 > paga). Portais de anúncio (VivaReal/Zap/OLX) não têm API pública e raspagem
-> fere os termos deles. Geoportais de valor venal existem **por município** —
+> fere os termos deles. Geoportais de cadastro existem **por município** —
 > Cascavel entra como piloto e cada cidade nova é um adaptador.
 
 ## Rodar localmente
@@ -87,8 +91,9 @@ Acesse http://localhost:3000. **A câmera e o GPS só funcionam em HTTPS** (ou e
 
 ## Próximas fases
 
-- Integração real por coordenada com o geoportal de Cascavel (WMS/WFS) →
-  puxar inscrição cadastral e valor venal automaticamente.
+- Integração real por coordenada com o geoportal de Cascavel (cadastro
+  público: inscrição, área, testada, matrícula, cartório — não valor venal,
+  ver nota acima).
 - Adaptadores de geoportal para outras cidades.
 - Fluxo de pedido de matrícula com pré-preenchimento e acompanhamento.
 - Conta de usuário + sincronização do histórico (hoje é `localStorage`).

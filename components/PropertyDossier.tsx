@@ -318,7 +318,7 @@ export default function PropertyDossier({
 
           <ActionCard
             title="Localizar o cartório"
-            desc="Pesquisa de bens para descobrir em qual cartório está a matrícula."
+            desc="Pesquisa de bens no ONR. Dica: em Cascavel, clicar no lote no GeoCascavel já mostra o cartório responsável direto."
             href={onrPesquisaLink()}
             cta="Pesquisar"
             tag="ONR"

@@ -81,7 +81,7 @@ export default function CadastreCard({ coords }: { coords: Coords }) {
     <div className="rounded-xl border border-line bg-surface p-4">
       <div className="flex items-center justify-between gap-2">
         <p className="text-[11px] uppercase tracking-wider text-ink-muted">
-          Cadastro & valor venal
+          Cadastro do imóvel
         </p>
         <span className="rounded-full border border-line px-2 py-0.5 text-[10px] uppercase tracking-wider text-ink-muted">
           Geoportal
@@ -107,8 +107,14 @@ export default function CadastreCard({ coords }: { coords: Coords }) {
       {result && !result.available && result.reason === "not_configured" && (
         <div className="mt-2 space-y-2">
           <p className="text-sm text-ink-muted">
-            A consulta automática de cadastro/valor venal ainda não está
-            configurada para este ambiente.
+            O valor venal (IPTU) é protegido por sigilo fiscal (art. 198 do
+            CTN) e só o proprietário acessa, com login — nenhum app público
+            consegue puxar esse número automaticamente, nem o nosso.
+          </p>
+          <p className="text-sm text-ink-muted">
+            O que é público: endereço, área do terreno, testada, inscrição
+            cadastral e até o cartório responsável pela matrícula — tudo
+            consultável à mão no GeoCascavel (clique no lote no mapa).
           </p>
           <a
             href={cascavelGeoLink()}
@@ -116,7 +122,7 @@ export default function CadastreCard({ coords }: { coords: Coords }) {
             rel="noreferrer"
             className="inline-block text-sm font-medium text-accent hover:underline"
           >
-            Consultar no portal de Cascavel →
+            Consultar no GeoCascavel →
           </a>
         </div>
       )}
