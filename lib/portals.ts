@@ -9,14 +9,13 @@ import type { Address, Coords } from "@/lib/types";
 function addressQuery(address: Address | null): string {
   if (!address) return "";
   if (address.road) {
-    return [
-      address.houseNumber ? `${address.road}, ${address.houseNumber}` : address.road,
-      address.suburb,
-      address.city,
-      address.state,
-    ]
+    // Quote just the street name (multi-word) and leave the rest as loose
+    // terms — quoting the whole comma-heavy address as one exact phrase
+    // rarely matches how listing sites actually format it, so it returns
+    // zero results.
+    return [`"${address.road}"`, address.houseNumber, address.city]
       .filter(Boolean)
-      .join(", ");
+      .join(" ");
   }
   return address.label ?? "";
 }
@@ -32,18 +31,19 @@ export function streetViewLink(coords: Coords): string {
 /** Web search scoped to the main BR listing portals (VivaReal, Zap, OLX, Imovelweb). */
 export function listingsSearchLink(address: Address | null): string {
   const q = addressQuery(address) || "imóvel à venda";
-  const scoped = `"${q}" (site:vivareal.com.br OR site:zapimoveis.com.br OR site:olx.com.br OR site:imovelweb.com.br)`;
+  const scoped = `${q} (site:vivareal.com.br OR site:zapimoveis.com.br OR site:olx.com.br OR site:imovelweb.com.br)`;
   return `https://www.google.com/search?q=${encodeURIComponent(scoped)}`;
 }
 
-/** ONR — Pedido de Certidão de Matrícula (registro de imóveis). Paid, official. */
+/**
+ * ONR — Registradores (Operador Nacional do Sistema de Registro Eletrônico de
+ * Imóveis). Official national portal: certidão requests, matrícula lookup,
+ * and "pesquisa de bens" (find the responsible cartório) all live here.
+ * `pedidodecertidao.onr.org.br` (the previous link) doesn't resolve — DNS
+ * failure, not a temporary outage — so it was simply a wrong subdomain.
+ */
 export function onrCertidaoLink(): string {
-  return "https://pedidodecertidao.onr.org.br/";
-}
-
-/** ONR — pesquisa de bens (localizar em qual cartório está a matrícula). */
-export function onrPesquisaLink(): string {
-  return "https://www.registradores.org.br/";
+  return "https://registradores.onr.org.br/";
 }
 
 /**

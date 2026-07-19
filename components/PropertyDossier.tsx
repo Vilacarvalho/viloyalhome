@@ -9,7 +9,6 @@ import {
   googleMapsLink,
   listingsSearchLink,
   onrCertidaoLink,
-  onrPesquisaLink,
   streetViewLink,
 } from "@/lib/portals";
 
@@ -310,17 +309,9 @@ export default function PropertyDossier({
 
           <ActionCard
             title="Matrícula do imóvel"
-            desc="Pedir a certidão de matrícula no ONR (Registro de Imóveis). Serviço oficial e pago — não é puxada automática."
+            desc="Pedir certidão ou localizar o cartório responsável no ONR (Registro de Imóveis). Serviço oficial e pago — não é puxado automático. Dica: em Cascavel, clicar no lote no GeoCascavel já mostra o cartório direto."
             href={onrCertidaoLink()}
-            cta="Pedir certidão"
-            tag="ONR"
-          />
-
-          <ActionCard
-            title="Localizar o cartório"
-            desc="Pesquisa de bens no ONR. Dica: em Cascavel, clicar no lote no GeoCascavel já mostra o cartório responsável direto."
-            href={onrPesquisaLink()}
-            cta="Pesquisar"
+            cta="Abrir ONR"
             tag="ONR"
           />
 
