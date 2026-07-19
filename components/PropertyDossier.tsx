@@ -16,16 +16,18 @@ import {
 const MapView = dynamic(() => import("@/components/MapView"), {
   ssr: false,
   loading: () => (
-    <div className="h-56 w-full animate-pulse rounded-xl border border-line bg-surface-2" />
+    <div className="h-56 w-full animate-pulse border border-line bg-surface-2" />
   ),
 });
 
-function Field({ label, value }: { label: string; value?: string }) {
+function Row({ label, value }: { label: string; value?: string }) {
   if (!value) return null;
   return (
-    <div>
-      <p className="text-[11px] uppercase tracking-wider text-ink-muted">{label}</p>
-      <p className="text-sm text-ink">{value}</p>
+    <div className="flex items-baseline justify-between gap-3 border-b border-line px-4 py-2.5 last:border-0">
+      <span className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+        {label}
+      </span>
+      <span className="text-right text-sm text-ink">{value}</span>
     </div>
   );
 }
@@ -41,14 +43,14 @@ function TextInput({
 }) {
   return (
     <label className="block">
-      <span className="text-[11px] uppercase tracking-wider text-ink-muted">
+      <span className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
         {label}
       </span>
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 w-full rounded-lg border border-line bg-surface-2 px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent"
+        className="mt-1 w-full border border-line bg-surface-2 px-2.5 py-1.5 text-sm text-ink outline-none focus:border-accent"
       />
     </label>
   );
@@ -72,10 +74,12 @@ function ActionCard({
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="group flex flex-col gap-1 rounded-xl border border-line bg-surface p-4 transition-colors hover:border-accent"
+      className="group flex flex-col gap-1.5 border border-line bg-surface p-4 transition-colors hover:border-accent"
     >
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-medium text-ink">{title}</p>
+        <p className="font-mono text-xs font-semibold uppercase tracking-wider text-ink">
+          {title}
+        </p>
         {tag && (
           <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-[10px] uppercase tracking-wider text-ink-muted">
             {tag}
@@ -83,7 +87,7 @@ function ActionCard({
         )}
       </div>
       <p className="text-xs leading-relaxed text-ink-muted">{desc}</p>
-      <span className="mt-1 text-xs font-medium text-accent group-hover:underline">
+      <span className="mt-1 font-mono text-xs font-medium text-accent group-hover:underline">
         {cta} →
       </span>
     </a>
@@ -161,23 +165,44 @@ export default function PropertyDossier({
 
   return (
     <div className="space-y-5">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={photoDataUrl}
-        alt="Foto do imóvel"
-        className="max-h-72 w-full rounded-xl border border-line object-cover"
-      />
+      {/* Hero: photo framed like an instrument viewfinder, with a live
+          coordinate readout HUD — the "scan" made visible. */}
+      <div className="relative border border-line">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={photoDataUrl}
+          alt="Foto do imóvel"
+          className="block max-h-80 w-full object-cover"
+        />
+        {coords && (
+          <>
+            <div className="viewfinder-corner viewfinder-corner--tl" />
+            <div className="viewfinder-corner viewfinder-corner--tr" />
+            <div className="viewfinder-corner viewfinder-corner--bl" />
+            <div className="viewfinder-corner viewfinder-corner--br" />
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-5 pb-3 pt-8">
+              <p className="font-mono text-xs font-medium text-accent">
+                {locating ? "atualizando…" : formatCoords(coords)}
+              </p>
+              <p className="mt-0.5 font-mono text-[10px] text-white/70">
+                {SOURCE_LABEL[coords.source]}
+                {coords.accuracy ? ` · ±${Math.round(coords.accuracy)}m` : ""}
+              </p>
+            </div>
+          </>
+        )}
+      </div>
 
-      <div className="rounded-xl border border-line bg-surface p-4">
-        <div className="flex items-start justify-between gap-2">
-          <p className="text-[11px] uppercase tracking-wider text-ink-muted">
-            Endereço estimado
+      <div className="border border-line bg-surface">
+        <div className="flex items-center justify-between border-b border-line px-4 py-3">
+          <p className="font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+            Endereço
           </p>
           {!editing && (
             <button
               type="button"
               onClick={startEditing}
-              className="shrink-0 text-xs font-medium text-accent hover:underline"
+              className="font-mono text-[10px] font-semibold uppercase tracking-wider text-accent hover:underline"
             >
               Editar
             </button>
@@ -185,7 +210,7 @@ export default function PropertyDossier({
         </div>
 
         {!editing && (
-          <p className="mt-1 text-base leading-snug text-ink">
+          <p className="px-4 py-3 text-base leading-snug text-ink">
             {locating
               ? "Atualizando endereço…"
               : (address?.label ?? "Endereço não identificado para esta coordenada.")}
@@ -193,18 +218,18 @@ export default function PropertyDossier({
         )}
 
         {!editing && address && (
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <Field label="Logradouro" value={address.road} />
-            <Field label="Número" value={address.houseNumber} />
-            <Field label="Bairro" value={address.suburb} />
-            <Field label="Cidade" value={address.city} />
-            <Field label="UF" value={address.state} />
-            <Field label="CEP" value={address.postcode} />
+          <div className="border-t border-line">
+            <Row label="Logradouro" value={address.road} />
+            <Row label="Número" value={address.houseNumber} />
+            <Row label="Bairro" value={address.suburb} />
+            <Row label="Cidade" value={address.city} />
+            <Row label="UF" value={address.state} />
+            <Row label="CEP" value={address.postcode} />
           </div>
         )}
 
         {editing && (
-          <div className="mt-3 space-y-3">
+          <div className="space-y-3 px-4 py-4">
             <div className="grid grid-cols-2 gap-3">
               <TextInput
                 label="Logradouro"
@@ -241,32 +266,18 @@ export default function PropertyDossier({
               <button
                 type="button"
                 onClick={saveEditing}
-                className="rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-accent-hover"
+                className="bg-accent px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wider text-[#06110c] hover:bg-accent-hover"
               >
                 Salvar
               </button>
               <button
                 type="button"
                 onClick={() => setEditing(false)}
-                className="rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-ink-muted hover:text-ink"
+                className="border border-line px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-ink-muted hover:text-ink"
               >
                 Cancelar
               </button>
             </div>
-          </div>
-        )}
-
-        {coords && !editing && (
-          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-muted">
-            <span>{formatCoords(coords)}</span>
-            <span aria-hidden>·</span>
-            <span>{SOURCE_LABEL[coords.source]}</span>
-            {coords.accuracy ? (
-              <>
-                <span aria-hidden>·</span>
-                <span>precisão ~{Math.round(coords.accuracy)} m</span>
-              </>
-            ) : null}
           </div>
         )}
       </div>
@@ -274,7 +285,7 @@ export default function PropertyDossier({
       {coords && (
         <div>
           <MapView coords={coords} draggable onPinMoved={handlePinMoved} />
-          <p className="mt-2 text-[11px] text-ink-muted">
+          <p className="mt-2 text-[11px] leading-relaxed text-ink-muted">
             O endereço automático pode errar em condomínios ou ruas sem
             numeração completa. Arraste o pino até a casa exata para
             atualizar o endereço, ou edite os campos manualmente acima.
@@ -287,7 +298,7 @@ export default function PropertyDossier({
       )}
 
       <div>
-        <p className="mb-2 text-[11px] uppercase tracking-wider text-ink-muted">
+        <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-ink-muted">
           Próximos passos
         </p>
         <div className="grid gap-3">

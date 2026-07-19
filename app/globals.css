@@ -1,16 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --color-bg: #0e0f11;
-  --color-surface: #17191c;
-  --color-surface-2: #1f2226;
-  --color-ink: #f4f4f2;
-  --color-ink-muted: #9aa0a6;
-  --color-line: #2b2f34;
-  --color-accent: #3ba676;
-  --color-accent-hover: #2f8c63;
+  /* Survey-instrument palette: near-black field, LED-green for confirmed
+     readings, ochre for cadastral data — the same tone Cascavel's own
+     municipal parcel maps render lots in. */
+  --color-bg: #0b0d0c;
+  --color-surface: #131615;
+  --color-surface-2: #191d1b;
+  --color-ink: #eef0ea;
+  --color-ink-muted: #8b948d;
+  --color-line: #262b28;
+  --color-accent: #34c98e;
+  --color-accent-hover: #2aab78;
+  --color-cadastral: #c9a24a;
   --color-danger: #d8695a;
   --color-warning: #d1a24e;
+
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-sans: var(--font-plex-sans), ui-sans-serif, sans-serif;
 }
 
 @theme inline {
@@ -22,14 +29,18 @@
   --color-line: var(--color-line);
   --color-accent: var(--color-accent);
   --color-accent-hover: var(--color-accent-hover);
+  --color-cadastral: var(--color-cadastral);
   --color-danger: var(--color-danger);
   --color-warning: var(--color-warning);
+  --font-mono: var(--font-mono);
+  --font-sans: var(--font-sans);
 }
 
 html,
 body {
   background: var(--color-bg);
   color: var(--color-ink);
+  font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -39,7 +50,12 @@ body {
 
 ::selection {
   background: var(--color-accent);
-  color: #fff;
+  color: #06110c;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 /* Leaflet controls need a little contrast tweak for the dark theme */
@@ -59,4 +75,67 @@ body {
 .leaflet-popup-tip {
   background: var(--color-surface);
   color: var(--color-ink);
+}
+
+/* --- Viewfinder signature: corner brackets + coordinate HUD on the hero photo --- */
+
+.viewfinder-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--color-accent);
+  opacity: 0.9;
+}
+.viewfinder-corner--tl {
+  top: 10px;
+  left: 10px;
+  border-right: none;
+  border-bottom: none;
+}
+.viewfinder-corner--tr {
+  top: 10px;
+  right: 10px;
+  border-left: none;
+  border-bottom: none;
+}
+.viewfinder-corner--bl {
+  bottom: 10px;
+  left: 10px;
+  border-right: none;
+  border-top: none;
+}
+.viewfinder-corner--br {
+  bottom: 10px;
+  right: 10px;
+  border-left: none;
+  border-top: none;
+}
+
+@keyframes viewfinder-lock {
+  0% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .viewfinder-corner {
+    animation: viewfinder-lock 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+  .viewfinder-corner--tr {
+    animation-delay: 0.05s;
+  }
+  .viewfinder-corner--bl {
+    animation-delay: 0.1s;
+  }
+  .viewfinder-corner--br {
+    animation-delay: 0.15s;
+  }
 }

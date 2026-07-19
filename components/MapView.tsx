@@ -96,7 +96,7 @@ export default function MapView({
   return (
     <div
       ref={containerRef}
-      className="h-56 w-full overflow-hidden rounded-xl border border-line"
+      className="h-56 w-full overflow-hidden border border-line"
       aria-label="Mapa da localização do imóvel"
     />
   );

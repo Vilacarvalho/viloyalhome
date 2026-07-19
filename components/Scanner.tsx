@@ -153,34 +153,61 @@ export default function Scanner() {
       />
 
       {!scan && (
-        <div className="rounded-2xl border border-line bg-surface p-6 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-2 text-2xl">
-            📸
+        <div className="relative overflow-hidden border border-line bg-surface p-6 text-center">
+          <div className="pointer-events-none absolute inset-0 opacity-[0.04]">
+            <div
+              className="h-full w-full"
+              style={{
+                backgroundImage:
+                  "linear-gradient(var(--color-ink) 1px, transparent 1px), linear-gradient(90deg, var(--color-ink) 1px, transparent 1px)",
+                backgroundSize: "16px 16px",
+              }}
+            />
           </div>
-          <h2 className="text-lg font-medium text-ink">Escaneie um imóvel</h2>
-          <p className="mx-auto mt-1 max-w-xs text-sm text-ink-muted">
-            Tire uma foto na frente do imóvel. Usamos o GPS do seu aparelho para
-            achar o endereço e montar a ficha.
-          </p>
-          <label
-            htmlFor="scanner-file"
-            aria-disabled={!!busy}
-            className={`mt-5 block w-full cursor-pointer rounded-xl bg-accent px-4 py-3 text-center font-medium text-white transition-colors hover:bg-accent-hover ${
-              busy ? "pointer-events-none opacity-60" : ""
-            }`}
-          >
-            {busy ?? "Tirar foto"}
-          </label>
-          <p className="mt-3 text-[11px] text-ink-muted">
-            A localização precisa de HTTPS e da sua permissão de GPS.
-          </p>
+          <div className="relative">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center border border-accent/40 text-accent">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                aria-hidden
+              >
+                <path d="M4 8V6a2 2 0 0 1 2-2h2m8 0h2a2 2 0 0 1 2 2v2M4 16v2a2 2 0 0 0 2 2h2m8 0h2a2 2 0 0 0 2-2v-2" />
+                <circle cx="12" cy="12" r="3.5" />
+              </svg>
+            </div>
+            <h2 className="font-mono text-sm font-semibold uppercase tracking-[0.1em] text-ink">
+              Escanear imóvel
+            </h2>
+            <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-ink-muted">
+              Tire uma foto na frente do imóvel. O GPS do seu aparelho localiza
+              o endereço e monta a ficha.
+            </p>
+            <label
+              htmlFor="scanner-file"
+              aria-disabled={!!busy}
+              className={`mt-5 block w-full cursor-pointer bg-accent px-4 py-3.5 text-center font-mono text-sm font-semibold uppercase tracking-wider text-[#06110c] transition-colors hover:bg-accent-hover ${
+                busy ? "pointer-events-none opacity-60" : ""
+              }`}
+            >
+              {busy ?? "Tirar foto"}
+            </label>
+            <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-ink-muted">
+              Requer HTTPS + permissão de GPS
+            </p>
+          </div>
         </div>
       )}
 
       {error && (
-        <div className="rounded-xl border border-danger/40 bg-danger/10 p-4 text-sm text-ink">
-          <p className="font-medium text-danger">Não deu pra concluir</p>
-          <p className="mt-1 text-ink-muted">{error}</p>
+        <div className="border border-danger/40 bg-danger/10 p-4 text-sm text-ink">
+          <p className="font-mono text-xs font-semibold uppercase tracking-wider text-danger">
+            Não deu pra concluir
+          </p>
+          <p className="mt-1.5 text-ink-muted">{error}</p>
           <label
             htmlFor="scanner-file"
             className="mt-3 inline-block cursor-pointer text-sm font-medium text-accent hover:underline"
@@ -201,7 +228,7 @@ export default function Scanner() {
           <button
             type="button"
             onClick={reset}
-            className="w-full rounded-xl border border-line bg-surface px-4 py-3 font-medium text-ink transition-colors hover:border-accent"
+            className="w-full border border-line bg-surface px-4 py-3 font-mono text-sm uppercase tracking-wider text-ink transition-colors hover:border-accent"
           >
             Escanear outro imóvel
           </button>
@@ -210,7 +237,7 @@ export default function Scanner() {
 
       {!scan && history.length > 0 && (
         <div>
-          <p className="mb-2 text-[11px] uppercase tracking-wider text-ink-muted">
+          <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-ink-muted">
             Escaneados recentemente
           </p>
           <div className="grid grid-cols-3 gap-2">
@@ -219,7 +246,7 @@ export default function Scanner() {
                 key={h.id}
                 type="button"
                 onClick={() => setScan(h)}
-                className="group overflow-hidden rounded-lg border border-line text-left"
+                className="group overflow-hidden border border-line text-left transition-colors hover:border-accent/60"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -227,7 +254,7 @@ export default function Scanner() {
                   alt=""
                   className="aspect-square w-full object-cover"
                 />
-                <p className="truncate px-1.5 py-1 text-[10px] text-ink-muted">
+                <p className="truncate px-1.5 py-1 font-mono text-[10px] text-ink-muted">
                   {h.address?.city ?? h.address?.suburb ?? "Sem endereço"}
                 </p>
               </button>
