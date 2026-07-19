@@ -127,6 +127,15 @@ export default function Scanner() {
     if (inputRef.current) inputRef.current.value = "";
   }
 
+  function handleUpdate(patch: Partial<Pick<Scan, "coords" | "address">>) {
+    setScan((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, ...patch };
+      persist(next);
+      return next;
+    });
+  }
+
   return (
     <div className="space-y-6">
       {/* Visually hidden (not display:none) so the <label> reliably opens the
@@ -187,6 +196,7 @@ export default function Scanner() {
             photoDataUrl={scan.photoDataUrl}
             coords={scan.coords}
             address={scan.address}
+            onUpdate={handleUpdate}
           />
           <button
             type="button"

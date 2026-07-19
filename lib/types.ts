@@ -4,7 +4,7 @@ export type Coords = {
   /** Accuracy radius in meters, when known (device GPS). */
   accuracy?: number;
   /** Where the coordinate came from. */
-  source: "device" | "exif";
+  source: "device" | "exif" | "manual";
 };
 
 export type Address = {

@@ -5,11 +5,24 @@ import type { Map as LeafletMap, Marker, Circle } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { Coords } from "@/lib/types";
 
-export default function MapView({ coords }: { coords: Coords }) {
+export default function MapView({
+  coords,
+  draggable = false,
+  onPinMoved,
+}: {
+  coords: Coords;
+  draggable?: boolean;
+  onPinMoved?: (lat: number, lon: number) => void;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markerRef = useRef<Marker | null>(null);
   const circleRef = useRef<Circle | null>(null);
+  const onPinMovedRef = useRef(onPinMoved);
+
+  useEffect(() => {
+    onPinMovedRef.current = onPinMoved;
+  }, [onPinMoved]);
 
   useEffect(() => {
     let cancelled = false;
@@ -36,9 +49,15 @@ export default function MapView({ coords }: { coords: Coords }) {
           iconSize: [18, 18],
           iconAnchor: [9, 9],
         });
-        markerRef.current = L.marker([coords.lat, coords.lon], { icon: pin }).addTo(
-          mapRef.current
-        );
+        markerRef.current = L.marker([coords.lat, coords.lon], {
+          icon: pin,
+          draggable,
+        }).addTo(mapRef.current);
+
+        markerRef.current.on("dragend", () => {
+          const pos = markerRef.current?.getLatLng();
+          if (pos) onPinMovedRef.current?.(pos.lat, pos.lng);
+        });
       } else {
         mapRef.current.setView([coords.lat, coords.lon], 18);
         markerRef.current?.setLatLng([coords.lat, coords.lon]);
@@ -65,7 +84,7 @@ export default function MapView({ coords }: { coords: Coords }) {
     return () => {
       cancelled = true;
     };
-  }, [coords]);
+  }, [coords, draggable]);
 
   useEffect(() => {
     return () => {
