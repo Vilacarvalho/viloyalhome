@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Camera, FileSearch, Loader2, LocateFixed, MapPin } from "lucide-react";
 import PropertyDossier from "@/components/PropertyDossier";
 import {
   getDeviceLocation,
@@ -49,6 +50,12 @@ function loadHistory(): Scan[] {
     return [];
   }
 }
+
+const STEPS = [
+  { icon: Camera, label: "Tire a foto" },
+  { icon: LocateFixed, label: "GPS localiza" },
+  { icon: FileSearch, label: "Monta a ficha" },
+];
 
 export default function Scanner() {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -137,7 +144,7 @@ export default function Scanner() {
   }
 
   return (
-    <div className="space-y-6">
+    <div>
       {/* Visually hidden (not display:none) so the <label> reliably opens the
           camera on iOS Safari, which blocks JS-triggered clicks on file inputs. */}
       <input
@@ -153,113 +160,127 @@ export default function Scanner() {
       />
 
       {!scan && (
-        <div className="relative overflow-hidden border border-line bg-surface p-6 text-center">
-          <div className="pointer-events-none absolute inset-0 opacity-[0.04]">
-            <div
-              className="h-full w-full"
-              style={{
-                backgroundImage:
-                  "linear-gradient(var(--color-ink) 1px, transparent 1px), linear-gradient(90deg, var(--color-ink) 1px, transparent 1px)",
-                backgroundSize: "16px 16px",
-              }}
-            />
-          </div>
-          <div className="relative">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center border border-accent/40 text-accent">
-              <svg
-                width="22"
-                height="22"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                aria-hidden
-              >
-                <path d="M4 8V6a2 2 0 0 1 2-2h2m8 0h2a2 2 0 0 1 2 2v2M4 16v2a2 2 0 0 0 2 2h2m8 0h2a2 2 0 0 0 2-2v-2" />
-                <circle cx="12" cy="12" r="3.5" />
-              </svg>
-            </div>
-            <h2 className="font-mono text-sm font-semibold uppercase tracking-[0.1em] text-ink">
-              Escanear imóvel
+        <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-14 lg:py-6">
+          {/* Pitch */}
+          <div className="animate-rise text-center lg:text-left">
+            <span className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/60 px-3 py-1 text-xs font-medium text-ink-muted">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              Foto → GPS → ficha do imóvel
+            </span>
+            <h2 className="mx-auto mt-4 max-w-md text-[28px] font-extrabold leading-[1.1] tracking-tight text-ink sm:text-4xl lg:mx-0">
+              Descubra qualquer imóvel{" "}
+              <span className="text-accent">com uma foto</span>.
             </h2>
-            <p className="mx-auto mt-2 max-w-xs text-sm leading-relaxed text-ink-muted">
-              Tire uma foto na frente do imóvel. O GPS do seu aparelho localiza
-              o endereço e monta a ficha.
+            <p className="mx-auto mt-3 max-w-md text-[15px] leading-relaxed text-ink-muted lg:mx-0">
+              Fotografe a fachada. O GPS do seu aparelho acha o endereço no mapa
+              e monta a ficha com cadastro, matrícula e anúncios.
             </p>
-            <label
-              htmlFor="scanner-file"
-              aria-disabled={!!busy}
-              className={`mt-5 block w-full cursor-pointer bg-accent px-4 py-3.5 text-center font-mono text-sm font-semibold uppercase tracking-wider text-[#06110c] transition-colors hover:bg-accent-hover ${
-                busy ? "pointer-events-none opacity-60" : ""
-              }`}
-            >
-              {busy ?? "Tirar foto"}
-            </label>
-            <p className="mt-3 font-mono text-[10px] uppercase tracking-wider text-ink-muted">
-              Requer HTTPS + permissão de GPS
-            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-2 lg:justify-start">
+              {STEPS.map((s) => (
+                <span
+                  key={s.label}
+                  className="inline-flex items-center gap-2 rounded-full bg-surface px-3 py-1.5 text-xs font-medium text-ink-muted ring-1 ring-line"
+                >
+                  <s.icon size={14} className="text-accent" />
+                  {s.label}
+                </span>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
 
-      {error && (
-        <div className="border border-danger/40 bg-danger/10 p-4 text-sm text-ink">
-          <p className="font-mono text-xs font-semibold uppercase tracking-wider text-danger">
-            Não deu pra concluir
-          </p>
-          <p className="mt-1.5 text-ink-muted">{error}</p>
-          <label
-            htmlFor="scanner-file"
-            className="mt-3 inline-block cursor-pointer text-sm font-medium text-accent hover:underline"
-          >
-            Tentar de novo →
-          </label>
+          {/* Scan card */}
+          <div className="animate-rise">
+            <div className="relative mx-auto max-w-md overflow-hidden rounded-3xl border border-line bg-surface p-7 shadow-card sm:p-8">
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -top-24 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-accent/20 blur-3xl"
+              />
+              <div className="relative">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/12 text-accent ring-1 ring-accent/20">
+                  <Camera size={30} strokeWidth={1.8} />
+                </div>
+                <h3 className="mt-5 text-center text-lg font-bold text-ink">
+                  Escanear imóvel
+                </h3>
+                <p className="mx-auto mt-1.5 max-w-xs text-center text-sm leading-relaxed text-ink-muted">
+                  Tire uma foto na frente do imóvel para começar.
+                </p>
+                <label
+                  htmlFor="scanner-file"
+                  aria-disabled={!!busy}
+                  className={`mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-accent px-4 py-4 text-center text-[15px] font-bold text-[#05140b] shadow-[0_8px_24px_rgba(34,197,94,0.3)] transition hover:bg-accent-hover active:scale-[0.99] ${
+                    busy ? "pointer-events-none opacity-70" : ""
+                  }`}
+                >
+                  {busy ? (
+                    <Loader2 size={18} className="animate-spin" />
+                  ) : (
+                    <Camera size={18} strokeWidth={2.2} />
+                  )}
+                  {busy ?? "Tirar foto"}
+                </label>
+                <p className="mt-3 text-center text-[11px] text-ink-muted">
+                  Precisa de HTTPS e da sua permissão de GPS.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {error && (
+            <div className="animate-rise rounded-2xl border border-danger/40 bg-danger/10 p-4 text-sm lg:col-span-2">
+              <p className="font-semibold text-danger">Não deu pra concluir</p>
+              <p className="mt-1 text-ink-muted">{error}</p>
+              <label
+                htmlFor="scanner-file"
+                className="mt-3 inline-block cursor-pointer text-sm font-semibold text-accent hover:underline"
+              >
+                Tentar de novo →
+              </label>
+            </div>
+          )}
+
+          {history.length > 0 && (
+            <div className="lg:col-span-2">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+                Escaneados recentemente
+              </p>
+              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+                {history.map((h) => (
+                  <button
+                    key={h.id}
+                    type="button"
+                    onClick={() => setScan(h)}
+                    className="group overflow-hidden rounded-2xl border border-line bg-surface text-left shadow-card transition hover:-translate-y-0.5 hover:border-accent/50"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={h.photoDataUrl}
+                      alt=""
+                      className="aspect-square w-full object-cover"
+                    />
+                    <p className="flex items-center gap-1 truncate px-2 py-1.5 text-[11px] text-ink-muted">
+                      <MapPin size={11} className="shrink-0 text-accent" />
+                      <span className="truncate">
+                        {h.address?.city ?? h.address?.suburb ?? "Sem endereço"}
+                      </span>
+                    </p>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
       {scan && (
-        <div className="space-y-4">
+        <div className="animate-rise">
           <PropertyDossier
             photoDataUrl={scan.photoDataUrl}
             coords={scan.coords}
             address={scan.address}
             onUpdate={handleUpdate}
+            onReset={reset}
           />
-          <button
-            type="button"
-            onClick={reset}
-            className="w-full border border-line bg-surface px-4 py-3 font-mono text-sm uppercase tracking-wider text-ink transition-colors hover:border-accent"
-          >
-            Escanear outro imóvel
-          </button>
-        </div>
-      )}
-
-      {!scan && history.length > 0 && (
-        <div>
-          <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-ink-muted">
-            Escaneados recentemente
-          </p>
-          <div className="grid grid-cols-3 gap-2">
-            {history.map((h) => (
-              <button
-                key={h.id}
-                type="button"
-                onClick={() => setScan(h)}
-                className="group overflow-hidden border border-line text-left transition-colors hover:border-accent/60"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={h.photoDataUrl}
-                  alt=""
-                  className="aspect-square w-full object-cover"
-                />
-                <p className="truncate px-1.5 py-1 font-mono text-[10px] text-ink-muted">
-                  {h.address?.city ?? h.address?.suburb ?? "Sem endereço"}
-                </p>
-              </button>
-            ))}
-          </div>
         </div>
       )}
     </div>
