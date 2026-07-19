@@ -6,6 +6,7 @@ import CadastreCard from "@/components/CadastreCard";
 import type { Address, Coords } from "@/lib/types";
 import { formatCoords, reverseGeocode } from "@/lib/geo";
 import {
+  certidaoPrivadaLink,
   googleMapsLink,
   listingsSearchLink,
   onrCertidaoLink,
@@ -309,10 +310,18 @@ export default function PropertyDossier({
 
           <ActionCard
             title="Matrícula do imóvel"
-            desc="Pedir certidão ou localizar o cartório responsável no ONR (Registro de Imóveis). Serviço oficial e pago — não é puxado automático. Dica: em Cascavel, clicar no lote no GeoCascavel já mostra o cartório direto."
+            desc="Pedir certidão ou localizar o cartório responsável no ONR (Registro de Imóveis). Serviço oficial, direto no cartório, pago à parte — não é puxado automático. Dica: em Cascavel, clicar no lote no GeoCascavel já mostra o cartório direto."
             href={onrCertidaoLink()}
             cta="Abrir ONR"
-            tag="ONR"
+            tag="ONR · oficial"
+          />
+
+          <ActionCard
+            title="Certidão com ajuda de terceiro"
+            desc="Serviço PRIVADO (não é o governo) que pede a certidão por você direto no cartório, cobrando uma taxa de intermediação. Mais mão na roda, mas mais caro que ir direto no ONR."
+            href={certidaoPrivadaLink()}
+            cta="Abrir serviço privado"
+            tag="Privado"
           />
 
           <ActionCard

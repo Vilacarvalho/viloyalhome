@@ -47,6 +47,17 @@ export function onrCertidaoLink(): string {
 }
 
 /**
+ * registrosdeimoveis.com — a private company that requests the certidão on
+ * your behalf directly from the cartório, for a service fee. NOT the ONR /
+ * government platform (that's onrCertidaoLink). Offered as a "more
+ * hand-holding, costs more" alternative — keep the UI copy explicit that
+ * this is a private intermediary, not an official channel.
+ */
+export function certidaoPrivadaLink(): string {
+  return "https://registrosdeimoveis.com/";
+}
+
+/**
  * GeoCascavel — Cascavel/PR's public cadastral map viewer (lote, quadra,
  * inscrição, área, testada, matrícula, cartório). Confirmed working by manual
  * DevTools inspection. Valor venal is NOT exposed here (or anywhere public):
