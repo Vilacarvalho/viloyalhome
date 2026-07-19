@@ -9,11 +9,12 @@ import type { Address, Coords } from "@/lib/types";
 function addressQuery(address: Address | null): string {
   if (!address) return "";
   if (address.road) {
-    // Quote just the street name (multi-word) and leave the rest as loose
-    // terms — quoting the whole comma-heavy address as one exact phrase
-    // rarely matches how listing sites actually format it, so it returns
-    // zero results.
-    return [`"${address.road}"`, address.houseNumber, address.city]
+    // Real estate listings almost always omit the exact house number (privacy
+    // — sellers/agents don't want drive-bys), so requiring it here would
+    // filter out real matches. Bairro is what BR listings actually lead
+    // with, often more than the street name, so it's included instead.
+    // Quote just the street name (multi-word); leave the rest as loose terms.
+    return [`"${address.road}"`, address.suburb, address.city]
       .filter(Boolean)
       .join(" ");
   }
